@@ -1,0 +1,11 @@
+DELIVERABLES FOR THIS LAB the Prolog source code:- parser.pl
+NOTE:
+- the parser should be written using DCG notationLänkar till en extern sida.
+- ASSUME that the test files (*.pas) are in a directory "testfiles Ladda ner testfiles"
+- the parser should generate an output file: parser.out
+- the output should be *identical* to this test outputLadda ner test output
+- this means that all the token values (256, 257 etc) should be identical!!!
+- use diff checkerLänkar till en extern sida. to check this
+- note the use of 273 (for undefined symbols) and 275 (EOF)
+
+Om ni som jag tycker att trace-funktionen i Prolog är svår att följa med i, så finns det i SWI-prolog en inbyggd grafisk debugger som är avsevärt lättare att förstå. Den startas från menyn "Debug"->"Graphical debugger" och sen använder man trace som vanligt fast i ett mer lättbegripligt format. Man kan även starta den grafiska debuggern via kommandot guitracer.

@@ -1,0 +1,6 @@
+Downaload image for swipl
+1. docker pull swipl
+
+Run docker container, change directory to your location of files
+2. docker run -it --rm -v C:\Users\anton\Code\Karlstad-University\Programming-languages-DVGC01\Lab3-Prolog-Parser:/app -w /app swipl 
+

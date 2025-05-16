@@ -1,0 +1,50 @@
+Using Prolog
+Prolog
+
+The Prolog system we will use is SWI-Prolog.
+Some basic hints in order to learn the basics of SWI-Prolog:
+
+After logging in to the Linux system, the Prolog interpreter is started by writing after the command prompt
+You then need to load your program using consult (see below)
+>swipl
+or
+>prolog
+
+Alternatively a load and go for program abc.pl is
+>swipl -s abc.pl
+or
+>prolog -s abc.pl
+
+Now you are in query mode and the prompt is: ?-
+
+?-	% Back in query mode.
+?- consult('filname').	% Load the program which has been saved in the file file name, e.g. lab2
+(NB! reconsult/1 undefined in SWI-Prolog.)
+?- ['filename'].	% is a shorter alternative
+? - consult(user).	% You can even write facts and rules directly from the keyboard.
+|: 
+|:
+|: Ctrl-D	% End input from the keyboard.
+?-	% Back in query mode.
+?- listing.	% Show all predicates which have been loaded.
+?- listing(P).	% Show only facts and rules with the name P, e.g. free_in.
+?- trace.	% Switch on the tracing-mechanism in order for example to see how Prolog executes a program.
+?- notrace.	% Switch off tracing (sometimes notrace, nodebug. is required)
+?- spy(P).	% Set up "spy-points" on all P.
+?- nospy(P).	% Remove all spy-points on P.
+?- debugging.	% Show debug-status and spy points.
+?- nodebug.	% Switch off debug-mode.
+?- help(listing).	% On-line help about different topics in SWI-Prolog, e.g. listing.
+In trace-mode you can choose different "options" for each prompt. By choosing a suitable option at each point, debugging can be made more efficient.
+
+c(reep):	(hit any key to progress stepwise) show complete tracing for the current query;
+s(kip):	skip over tracing for the currennt query and pause at the next query;
+l(eap):	skip over tracing for the currennt query and pause at the next spy-point;
+r(etry):	satisfy the current query one more time in exactly the same way as the first time (to show how the query is satisfied);
+f(ail);a(bort):stop the execution;h(alt):exit Prolog.
+It is important NOT to forget the full stop (period) after each query and after a command,
+e.g. the full stop in consult('filnamn'). must be present.
+Remember the ';' (semicolon) option for multiple answers!
+
+The easiest way to develop a program is to switch between a text editor and SWI-prolog,
+i.e. change and save your program in the editor and read in the file in SWI-Prolog with consult.
