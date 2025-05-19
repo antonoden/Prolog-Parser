@@ -96,7 +96,7 @@ stat_part_todo(_,_)  :-   write('stat_part: To Be Done'), nl.
 /* Define the above tests                                                     */
 /******************************************************************************/
 
-testph :- prog_head([program, fun, '(', input, ',', output, ')', ';'], []).
+testph :- prog_head([program, a, '(', input, ',', output, ')', ';'], []).
 testpr :-   program([program, c, '(', input, ',', output, ')', ';'], []).
 
 /******************************************************************************/
