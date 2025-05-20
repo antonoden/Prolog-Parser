@@ -1,1 +1,1 @@
-test 55 : .
+begin program end := test 1234 test34

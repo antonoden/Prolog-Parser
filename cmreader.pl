@@ -20,7 +20,7 @@ restsent(_, C, [W1 | Ws ]) :- readword(C, W1, C1), restsent(W1, C1, Ws).
 /******************************************************************************/
 
 readword(C, W, _)  :- C = -1, W = C.                    /* added EOF handling */
-readword(C, W, C1) :- single_character( C ), name(W, [C]), get0(C1).  
+readword(C, W, C1) :- single_character( C ), name(W, [C]), get0(C1).
 readword(C, W, C2) :-
    in_word(C, NewC ),
    get0(C1),
@@ -28,8 +28,6 @@ readword(C, W, C2) :-
    name(W, [NewC|Cs]).
 
 readword(_, W, C2) :- get0(C1), readword(C1, W, C2).
-
-/*readwordaux(C, W, C1, C2) :- C1 \= 61, name(W, [C]), C1 = C2. (code taken from Prolog5-Lab) */
 
 restword(C, [NewC|Cs], C2) :-
    in_word(C, NewC),

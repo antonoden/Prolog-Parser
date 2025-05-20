@@ -125,7 +125,33 @@ replace1([H|T], X, Y, [Y|T]) :-
 replace1([H|T], X, Y, L) :-
     replace1(T, X, Y, [H|T]).
 
+/*Exercise 2.8. Prolog lists without duplicates can be interpreted as sets. Write a
+program that given such a list computes the corresponding power set. Recall that the
+power set of a set S is the set of all subsets of S. This includes the empty set as well as
+the set S itself.
+Define a predicate power/2 such that, if the first argument is instantiated with a
+list, the corresponding power set (i.e., a list of lists) is returned in the second position.
+Example:
+?- power([a, b, c], P).
+P = [[a, b, c], [a, b], [a, c], [a], [b, c], [b], [c], []]
+Yes
+Note: The order of the sub-lists in your result doesn’t matter.*/
 
+/*Exercise 3.1. Write a Prolog predicate distance/3 to calculate the distance between
+two points in the 2-dimensional plane. Points are given as pairs of coordinates. Examples:
+?- distance((0,0), (3,4), X).
+X = 5
+Yes
+?- distance((-2.5,1), (3.5,-4), X).
+X = 7.81025
+Yes
+*/
+
+distance1((AX,AY), (BX,BY), HYP) :-
+  C = (AX,BY),
+  MOT is abs(AX-(BX)),
+  NAR is abs(AY-(BY)),
+  HYP is sqrt(MOT**2 + NAR**2).
 
 
 
