@@ -14,25 +14,72 @@
 /* This is a slightly modified from of the Pascal Grammar for Lab 2 Prolog    */
 /******************************************************************************/
 
-program       --> prog_head, var_part, stat_part.
+parser(Tok, t) :-
+   program(Tok, Rest),
+   write(Rest).
+
+parser(Tok, f).
+
+program(Tok, Rest2) :-
+   prog_head(Tok, Rest),
+   var_part(Rest, Rest1),
+   stat_part(Rest1, Rest2).
+
+%program       --> prog_head, var_part, stat_part.
 
 /******************************************************************************/
-/* Program Header                                                             */
+/* Program Header             */
 /******************************************************************************/
-prog_head     --> [program], id, ['('], [input], [','], [output], [')'], [';'].
+%prog_head     --> [program], id, ['('], [input], [','], [output], [')'], [';'].
 id            --> [a]|[b]|[c].
+
+prog_head([program|A], Tail) :- 
+   A=[270|B],     /* id */
+   B=[40|C],      /* ( */
+   C=[257|D],     /* input */
+   D=[44|E],      /* , */
+   E=[258|F],     /* output */
+   F=[41|G],      /* ) */
+   G=[59|Tail].   /* ; */
 
 /******************************************************************************/
 /* Var_part                                                                   */
 /******************************************************************************/
-var_part             --> var_part_todo.
-var_part_todo(_,_)   :-  write('var_part:  To Be Done'), nl.
+%var_part             --> var_part_todo.
+%var_part_todo(_,_)   :-  write('var_part:  To Be Done'), nl.
+
+var_part([259|A], Tail) :- /* var */
+   var_dec_list(A, Tail).
+
+var_dec_list([A|_], Tail) :-
+   var_dec(A, B),
+   B=[270|C],     /* id */
+   var_dec_list(B, Tail).
+
+var_dec(A, Tail) :-
+   id_list(A, B),
+   B=[58|C],       /* : */
+   type(C, D),
+   D=[59,Tail].    /* ; */
+
+id_list([270|A], Tail) :- /* id */
+   A=[44|B],       /* , */
+   id_list(B, Tail).
+
+id_list([270|A], A). /* id */
+
+type([integer|A], A).    
+type([boolean|A], A).    
+type([real|A], A).         
 
 /******************************************************************************/
 /* Stat part                                                                  */
 /******************************************************************************/
-stat_part            -->  stat_part_todo.
-stat_part_todo(_,_)  :-   write('stat_part: To Be Done'), nl.
+%stat_part            -->  stat_part_todo.
+%stat_part_todo(_,_)  :-   write('stat_part: To Be Done'), nl.
+
+stat_part([261|A], A) :- /* begin */
+   write('stat_part: To Be Done'), nl.
 
 /******************************************************************************/
 /* Testing the system: this may be done stepwise in Prolog                    */
@@ -169,8 +216,8 @@ single_character(43).                  /* * */
 single_character(44).                  /* , */
 single_character(45).                  /* - */
 single_character(46).                  /* . */
-single_character(59).                  /* ; */
 single_character(58).                  /* : */
+single_character(59).                  /* ; */
 single_character(61).                  /* = */
 
 
@@ -218,12 +265,12 @@ match(L, T) :- L='.',         char_code(L, T).
 match(L, T) :- L=program,     T is 256.
 match(L, T) :- L=input,       T is 257.
 match(L, T) :- L=output,      T is 258.
-match(L, T) :- L='var',         T is 259.
-match(L, T) :- L='integer',     T is 260.
-match(L, T) :- L='begin',       T is 261.
-match(L, T) :- L='end',         T is 262.
-match(L, T) :- L='boolean',     T is 263.
-match(L, T) :- L='real',        T is 264.
+match(L, T) :- L=var,         T is 259.
+match(L, T) :- L=integer,     T is 260.
+match(L, T) :- L=begin,       T is 261.
+match(L, T) :- L=end,         T is 262.
+match(L, T) :- L=boolean,     T is 263.
+match(L, T) :- L=real,        T is 264.
 %match(L, T) :- L='notdef',      T is 265.
 %match(L, T) :- L='notdef',      T is 266.
 %match(L, T) :- L='notdef',      T is 267.
@@ -368,6 +415,18 @@ test_read_and_lex_specific_test(FILE) :-
    atom_concat(FP, ' end of parse', END),
    write(END), nl, nl.
 
+test_read_lex_parser_specific_test(FILE) :-
+   atom_concat('testfiles/', FILE, FP),
+   atom_concat('Testing ', FP, START),
+   write(START), nl, nl,
+   read_in(FP, L), 
+   write(L), nl,
+   lexer(L, Tok),
+   write(Tok), nl,
+   parser(Tok,Result),
+   write(Result), nl,
+   atom_concat(FP, ' end of parse', END),
+   write(END), nl, nl.
 
 /* testa  - file input (characters + Pascal program)                          */
 testa   :- testread(['cmreader.txt', 'testok1.pas']).
