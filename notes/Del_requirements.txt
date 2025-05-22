@@ -9,3 +9,9 @@ NOTE:
 - note the use of 273 (for undefined symbols) and 275 (EOF)
 
 Om ni som jag tycker att trace-funktionen i Prolog är svår att följa med i, så finns det i SWI-prolog en inbyggd grafisk debugger som är avsevärt lättare att förstå. Den startas från menyn "Debug"->"Graphical debugger" och sen använder man trace som vanligt fast i ett mer lättbegripligt format. Man kan även starta den grafiska debuggern via kommandot guitracer.
+
+
+“I know I defined the right base case and I know I defined a proper recursion
+rule, which is calling the same predicate again with a simplified argument.
+Hence, it will work. This is so, because I understand the recursion principle,
+I believe in it, and I am able to apply it. Now and forever.”

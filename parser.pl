@@ -1,7 +1,7 @@
 /******************************************************************************/
 /* Prolog Pascal-Parser - within course DVGC01 at Karlstad University         */
 /*    Programmed by Anton Odén                                                */
-/*    Helped by coursematerial with lectures including skeleton code for:     */    
+/*    Helped by coursematerial from lectures including skeleton code from:    */    
 /*    1. (skeletonparser.pl): Prolog Lab 2 example - Grammar test bed         */
 /*    2. (cmreader.pl): From Programming in Prolog (4th Ed.) Clocksin &       */
 /*          Mellish, Springer (1994) Chapter 5, pp 101-103 (DFR (140421)      */
@@ -14,147 +14,135 @@
 /* This is a slightly modified from of the Pascal Grammar for Lab 2 Prolog    */
 /******************************************************************************/
 
-parser(Tok, t) :-
-   program(Tok, Rest),
-   write(Rest).
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/*      PARSER                                                                */
+/******************************************************************************/
 
-parser(Tok, f).
+parser(TList, Res) :- (program(TList, Res), Res = [], write('Parse OK!'));
+                        write('Parse Fail!').
 
-program(Tok, Rest2) :-
-   prog_head(Tok, Rest),
-   var_part(Rest, Rest1),
-   stat_part(Rest1, Rest2).
-
-%program       --> prog_head, var_part, stat_part.
+program       --> prog_head, var_part, stat_part.
 
 /******************************************************************************/
-/* Program Header             */
+/* Program Header                                                             */
 /******************************************************************************/
-%prog_head     --> [program], id, ['('], [input], [','], [output], [')'], [';'].
-id            --> [a]|[b]|[c].
 
-prog_head([program|A], Tail) :- 
-   A=[270|B],     /* id */
-   B=[40|C],      /* ( */
-   C=[257|D],     /* input */
-   D=[44|E],      /* , */
-   E=[258|F],     /* output */
-   F=[41|G],      /* ) */
-   G=[59|Tail].   /* ; */
+/* [program], [id], [(], [input], [,], [output], [)], [;]. */ 
+prog_head      --> [256],[270],[40],[257],[44],[258],[41],[59]. 
 
 /******************************************************************************/
 /* Var_part                                                                   */
 /******************************************************************************/
-%var_part             --> var_part_todo.
-%var_part_todo(_,_)   :-  write('var_part:  To Be Done'), nl.
 
-var_part([259|A], Tail) :- /* var */
-   var_dec_list(A, Tail).
+% [var part]	::=	var [var dec list]
+var_part       --> [259], var_dec_list.
 
-var_dec_list([A|_], Tail) :-
-   var_dec(A, B),
-   B=[270|C],     /* id */
-   var_dec_list(B, Tail).
+% [var dec list]	::=	[var dec] | [var dec list] [var dec]
+var_dec_list   --> var_dec | var_dec, var_dec_list.
 
-var_dec(A, Tail) :-
-   id_list(A, B),
-   B=[58|C],       /* : */
-   type(C, D),
-   D=[59,Tail].    /* ; */
+% [var dec]	::=	[id list] : [type] ;
+var_dec        --> id_list, [58], type, [59].
 
-id_list([270|A], Tail) :- /* id */
-   A=[44|B],       /* , */
-   id_list(B, Tail).
+% [id list]	::=	id | [id list] , id
+id_list        --> [270] | [270], [44], id_list.
 
-id_list([270|A], A). /* id */
-
-type([integer|A], A).    
-type([boolean|A], A).    
-type([real|A], A).         
+% [type]	::=	integer | real | boolean
+type           --> [260] | [263] | [264].
 
 /******************************************************************************/
 /* Stat part                                                                  */
 /******************************************************************************/
-%stat_part            -->  stat_part_todo.
-%stat_part_todo(_,_)  :-   write('stat_part: To Be Done'), nl.
 
-stat_part([261|A], A) :- /* begin */
-   write('stat_part: To Be Done'), nl.
+% [stat part]	::=	begin [stat list] end .
+stat_part      --> [261], stat_list, [262], [46].
 
-/******************************************************************************/
-/* Testing the system: this may be done stepwise in Prolog                    */
-/* below are some examples of a "bottom-up" approach - start with simple      */
-/* tests and build up until a whole program can be tested                     */
-/******************************************************************************/
-/* Stat part                                                                  */
-/******************************************************************************/
-/*  op(['+'], []).                                                            */
-/*  op(['-'], []).                                                            */
-/*  op(['*'], []).                                                            */
-/*  op(['/'], []).                                                            */
-/*  addop(['+'], []).                                                         */
-/*  addop(['-'], []).                                                         */
-/*  mulop(['*'], []).                                                         */
-/*  mulop(['/'], []).                                                         */
-/*  factor([a], []).                                                          */
-/*  factor(['(', a, ')'], []).                                                */
-/*  term([a], []).                                                            */
-/*  term([a, '*', a], []).                                                    */
-/*  expr([a], []).                                                            */
-/*  expr([a, '*', a], []).                                                    */
-/*  assign_stat([a, assign, b], []).                                          */
-/*  assign_stat([a, assign, b, '*', c], []).                                  */
-/*  stat([a, assign, b], []).                                                 */
-/*  stat([a, assign, b, '*', c], []).                                         */
-/*  stat_list([a, assign, b], []).                                            */
-/*  stat_list([a, assign, b, '*', c], []).                                    */
-/*  stat_list([a, assign, b, ';', a, assign, c], []).                         */
-/*  stat_list([a, assign, b, '*', c, ';', a, assign, b, '*', c], []).         */
-/*  stat_part([begin, a, assign, b, '*', c, end, '.'], []).                   */
-/******************************************************************************/
-/* Var part                                                                   */
-/******************************************************************************/
-/* typ([integer], []).                                                        */
-/* typ([real], []).                                                           */
-/* typ([boolean], []).                                                        */
-/* id([a], []).                                                               */
-/* id([b], []).                                                               */
-/* id([c], []).                                                               */
-/* id_list([a], []).                                                          */
-/* id_list([a, ',', b], []).                                                  */
-/* id_list([a, ',', b, ',', c], []).                                          */
-/* var_dec([a, ':', integer], []).                                            */
-/* var_dec_list([a, ':', integer], []).                                       */
-/* var_dec_list([a, ':', integer, b, ':', real], []).                         */
-/* var_part([var, a, ':', integer], []).                                      */
-/******************************************************************************/
-/* Program header                                                             */
-/******************************************************************************/
-/* prog_head([program, c, '(', input, ',', output, ')', ';'], []).            */
-/******************************************************************************/
+% [stat list]	::=	[stat] | [stat list] ; [stat]
+stat_list      --> stat | stat, [59], stat_list.
 
-/******************************************************************************/
-/* Whole program                                                              */
-/******************************************************************************/
-/* program([program, c, '(', input, ',', output, ')', ';',                    */
-/*          var, a,    ':', integer, ';',                                     */
-/*               b, ',', c, ':', real,    ';',                                */
-/*          begin,                                                            */
-/*             a, assign, b, '*', c, ';',                                     */  
-/*             a, assign, b, '+', c,                                          */
-/*          end, '.'], []).                                                   */
-/******************************************************************************/
+% [stat]	::=	[assign stat]
+stat           --> assign_stat.
 
+% [assign stat]	::=	id := [expr]
+assign_stat    --> [270], [271], expr.
+
+% [expr]	::=	[term] | [expr] + [term]
+expr           --> term | term, [42], expr.
+
+% [term]	::=	[factor] | [term] * [factor]
+term           --> factor | factor, [43], term.
+
+% [factor]	::=	( [expr] ) | [operand]
+factor         --> operand | [40], expr, [41].
+
+% [operand]	::=	id | number
+operand        --> [270] | [272].
 
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
+/*  LEXER                                                                     */
+/******************************************************************************/
+
+lexer([], TOK) :- TOK = []. 
+
+lexer([H|T], [HTOK|TTOK]) :- match(H, HTOK), lexer(T, TTOK). % keywords
+ 
+match(L, T) :- L='(',         char_code(L, T).
+match(L, T) :- L=')',         char_code(L, T).
+match(L, T) :- L='+',         char_code(L, T).
+match(L, T) :- L='*',         char_code(L, T).
+match(L, T) :- L=',',         char_code(L, T).
+match(L, T) :- L=';',         char_code(L, T).
+match(L, T) :- L=':',         char_code(L, T).
+match(L, T) :- L='.',         char_code(L, T).
+match(L, T) :- L=program,     T is 256.
+match(L, T) :- L=input,       T is 257.
+match(L, T) :- L=output,      T is 258.
+match(L, T) :- L=var,         T is 259.
+match(L, T) :- L=integer,     T is 260.
+match(L, T) :- L=begin,       T is 261.
+match(L, T) :- L=end,         T is 262.
+match(L, T) :- L=boolean,     T is 263.
+match(L, T) :- L=real,        T is 264.
+%match(L, T) :- L='notdef',      T is 265.
+%match(L, T) :- L='notdef',      T is 266.
+%match(L, T) :- L='notdef',      T is 267.
+%match(L, T) :- L='notdef',      T is 268.
+%match(L, T) :- L='notdef',      T is 269.
+match(L, T) :- L=':=',          T is 271.
+%match(L, T) :- L='notdef',      T is 273.
+%match(L, T) :- L='notdef',      T is 274.
+match(L, T) :- L= -1,          T is 275.
+match(L, T) :- name(L, [H|Tail]), char_type(H, digit),
+                match_num(Tail), T is 272.
+match(L, T) :- name(L, [H|Tail]), char_type(H, alpha),
+                match_id(Tail), T is 270.
+match(_, T) :-                  T is 273.
+
+match_num([]).
+match_num([H|T]) :- char_type(H, digit), match_num(T).
+
+match_id([]).
+match_id([H|T]) :- char_type(H, alnum), match_id(T).
+
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
-/*      CMREADER.PL                                                           */
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/*      READER                                                                */
 /******************************************************************************/
 
 read_in(File,[W|Ws]) :- see(File), get0(C), 
@@ -247,58 +235,72 @@ lastword('.').
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
-/*  LEXER                                                                     */
-/******************************************************************************/
-
-lexer([], TOK) :- TOK = []. 
-
-lexer([H|T], [HTOK|TTOK]) :- match(H, HTOK), lexer(T, TTOK). % keywords
- 
-match(L, T) :- L='(',         char_code(L, T).
-match(L, T) :- L=')',         char_code(L, T).
-match(L, T) :- L='+',         char_code(L, T).
-match(L, T) :- L='*',         char_code(L, T).
-match(L, T) :- L=',',         char_code(L, T).
-match(L, T) :- L=';',         char_code(L, T).
-match(L, T) :- L=':',         char_code(L, T).
-match(L, T) :- L='.',         char_code(L, T).
-match(L, T) :- L=program,     T is 256.
-match(L, T) :- L=input,       T is 257.
-match(L, T) :- L=output,      T is 258.
-match(L, T) :- L=var,         T is 259.
-match(L, T) :- L=integer,     T is 260.
-match(L, T) :- L=begin,       T is 261.
-match(L, T) :- L=end,         T is 262.
-match(L, T) :- L=boolean,     T is 263.
-match(L, T) :- L=real,        T is 264.
-%match(L, T) :- L='notdef',      T is 265.
-%match(L, T) :- L='notdef',      T is 266.
-%match(L, T) :- L='notdef',      T is 267.
-%match(L, T) :- L='notdef',      T is 268.
-%match(L, T) :- L='notdef',      T is 269.
-match(L, T) :- L=':=',          T is 271.
-%match(L, T) :- L='notdef',      T is 273.
-%match(L, T) :- L='notdef',      T is 274.
-match(L, T) :- L= -1,          T is 275.
-match(L, T) :- name(L, [H|Tail]), char_type(H, digit),
-                match_num(Tail), T is 272.
-match(L, T) :- name(L, [H|Tail]), char_type(H, alpha),
-                match_id(Tail), T is 270.
-match(_, T) :-                  T is 273.
-
-match_num([]).
-match_num([H|T]) :- char_type(H, digit), match_num(T).
-
-match_id([]).
-match_id([H|T]) :- char_type(H, alnum), match_id(T).
-
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
 /*  TESTFUNCTIONS                                                             */
 /******************************************************************************/
+
+run_all_tests() :- 
+   tell('parser.out'),
+   write('Testing OK programs '), nl,
+   run_specific_test('testok1.pas'),
+   run_specific_test('testok2.pas'), 
+   run_specific_test('testok3.pas'), 
+   run_specific_test('testok4.pas'), 
+   run_specific_test('testok5.pas'), 
+   run_specific_test('testok6.pas'), 
+   run_specific_test('testok7.pas'),
+   nl, write('Testing a-z programs '), nl,
+   run_specific_test('testa.pas'),
+   run_specific_test('testb.pas'),
+   run_specific_test('testc.pas'),
+   run_specific_test('testd.pas'),
+   run_specific_test('teste.pas'),
+   run_specific_test('testf.pas'),
+   run_specific_test('testg.pas'),
+   run_specific_test('testh.pas'),
+   run_specific_test('testi.pas'),
+   run_specific_test('testj.pas'),
+   run_specific_test('testk.pas'),
+   run_specific_test('testl.pas'),
+   run_specific_test('testm.pas'),
+   run_specific_test('testn.pas'),
+   run_specific_test('testo.pas'),
+   run_specific_test('testp.pas'),
+   run_specific_test('testq.pas'),
+   run_specific_test('testr.pas'),
+   run_specific_test('tests.pas'),
+   run_specific_test('testt.pas'),
+   run_specific_test('testu.pas'),
+   run_specific_test('testv.pas'),
+   run_specific_test('testw.pas'),
+   run_specific_test('testx.pas'),
+   run_specific_test('testy.pas'),
+   run_specific_test('testz.pas'),
+   nl, write('Testing fun programs '), nl,
+   run_specific_test('fun1.pas'),
+   run_specific_test('fun2.pas'),
+   run_specific_test('fun3.pas'),
+   run_specific_test('fun4.pas'),
+   run_specific_test('fun5.pas'),
+   nl, write('Testing sem programs '), nl,
+   run_specific_test('sem1.pas'),
+   run_specific_test('sem2.pas'),
+   run_specific_test('sem3.pas'),
+   run_specific_test('sem4.pas'),
+   run_specific_test('sem5.pas'),    
+   told.
+
+run_specific_test(F) :-
+   atom_concat('testfiles/', F, FP),
+   atom_concat('Testing ', FP, START),
+   nl, write(START), nl,
+   read_in(FP, L), 
+   write(L), nl,
+   lexer(L, Tok),
+   write(Tok), nl,
+   parser(Tok, _),
+   nl, atom_concat(FP, ' end of parse', END),
+   write(END), nl.	
+
 
 /* test_lexer - Takes input as file to read_in and transformed lexemes that   */
 /*                read_in creates and transform them to tokens. Writes the    */
