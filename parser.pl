@@ -19,9 +19,6 @@
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
 /*      PARSER                                                                */
 /******************************************************************************/
 
@@ -104,15 +101,15 @@ match(L, T) :- L=',',         char_code(L, T).
 match(L, T) :- L=';',         char_code(L, T).
 match(L, T) :- L=':',         char_code(L, T).
 match(L, T) :- L='.',         char_code(L, T).
-match(L, T) :- L=program,     T is 256.
-match(L, T) :- L=input,       T is 257.
-match(L, T) :- L=output,      T is 258.
-match(L, T) :- L=var,         T is 259.
-match(L, T) :- L=integer,     T is 260.
-match(L, T) :- L=begin,       T is 261.
-match(L, T) :- L=end,         T is 262.
-match(L, T) :- L=boolean,     T is 263.
-match(L, T) :- L=real,        T is 264.
+match(L, T) :- L='program',     T is 256.
+match(L, T) :- L='input',       T is 257.
+match(L, T) :- L='output',      T is 258.
+match(L, T) :- L='var',         T is 259.
+match(L, T) :- L='integer',     T is 260.
+match(L, T) :- L='begin',       T is 261.
+match(L, T) :- L='end',         T is 262.
+match(L, T) :- L='boolean',     T is 263.
+match(L, T) :- L='real',        T is 264.
 %match(L, T) :- L='notdef',      T is 265.
 %match(L, T) :- L='notdef',      T is 266.
 %match(L, T) :- L='notdef',      T is 267.
@@ -121,11 +118,11 @@ match(L, T) :- L=real,        T is 264.
 match(L, T) :- L=':=',          T is 271.
 %match(L, T) :- L='notdef',      T is 273.
 %match(L, T) :- L='notdef',      T is 274.
-match(L, T) :- L= -1,          T is 275.
 match(L, T) :- name(L, [H|Tail]), char_type(H, digit),
-                match_num(Tail), T is 272.
+               match_num(Tail), T is 272.
 match(L, T) :- name(L, [H|Tail]), char_type(H, alpha),
                 match_id(Tail), T is 270.
+match(L, T) :- L= -1,           T is 275.
 match(_, T) :-                  T is 273.
 
 match_num([]).
@@ -134,9 +131,6 @@ match_num([H|T]) :- char_type(H, digit), match_num(T).
 match_id([]).
 match_id([H|T]) :- char_type(H, alnum), match_id(T).
 
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
@@ -207,7 +201,6 @@ single_character(46).                  /* . */
 single_character(58).                  /* : */
 single_character(59).                  /* ; */
 single_character(61).                  /* = */
-
 
 /******************************************************************************/
 /* These characters can appear within a word.                                 */
@@ -293,159 +286,13 @@ run_specific_test(F) :-
    atom_concat('testfiles/', F, FP),
    atom_concat('Testing ', FP, START),
    nl, write(START), nl,
-   read_in(FP, L), 
-   write(L), nl,
-   lexer(L, Tok),
-   write(Tok), nl,
-   parser(Tok, _),
+   read_in(FP, Ls), 
+   write(Ls), nl,
+   lexer(Ls, Ts),
+   write(Ts), nl,
+   parser(Ts, _),
    nl, atom_concat(FP, ' end of parse', END),
    write(END), nl.	
-
-
-/* test_lexer - Takes input as file to read_in and transformed lexemes that   */
-/*                read_in creates and transform them to tokens. Writes the    */
-/*                  results to output.out                                     */         
-test_lexer(File) :-  open('output.out', write, OS),
-                        read_in(File, L), 
-                        write(OS, L),
-                        nl(OS),
-                        lexer(L, T),
-                        write(OS, T),
-                        nl(OS), 
-                        close(OS).
-
-/* Writes argumented text to argumented file                                  */
-test_write_to_file(File, Text) :- 
-   open(File, write, OS),
-   write(OS, Text),
-   nl(OS),
-   close(OS).
-
-test_fetch_testfiles() :- 
-   directory_files('testfiles/', F),
-   testaux_delete_non_testfiles(F, F2),
-   writeln(F2).
-
-/* NB: Only deletes files before the assumed file to stand first 'fun1.pas'  */
-testaux_delete_non_testfiles([H|T], [H|T]) :-
-   H == 'fun1.pas'.
-
-testaux_delete_non_testfiles([_|T], NewF) :-
-   testaux_delete_non_testfiles(T, NewF).
-
-/*******************************************************************/
-/* read in all files from "testfiles/", trims away files that aren't testfiles */
-/* then calls read_in() on all files left and the lexer. Writes all results to */
-/* output.out                                                                  */
-test_read_and_lex_all_testfiles() :-
-   open('output.out', write, OS),
-   directory_files('testfiles/', F),
-   testaux_delete_non_testfiles(F, F2),
-   write(OS, 'Testing OK programs '), nl(OS), nl(OS),
-   testaux_read_and_lex_specific_tests(F2, OS, 'testok'),
-   write(OS, 'Testing a-z programs '), nl(OS), nl(OS),
-   testaux_read_and_lex_specific_test(OS, 'testa.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testb.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testc.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testd.pas'),
-   testaux_read_and_lex_specific_test(OS, 'teste.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testf.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testg.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testh.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testi.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testj.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testk.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testl.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testm.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testn.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testo.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testp.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testq.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testr.pas'),
-   testaux_read_and_lex_specific_test(OS, 'tests.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testt.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testu.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testv.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testw.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testx.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testy.pas'),
-   testaux_read_and_lex_specific_test(OS, 'testz.pas'),
-   write(OS, 'Testing fun programs '), nl(OS), nl(OS),
-   testaux_read_and_lex_specific_tests(F2, OS, 'fun'),
-   write(OS, 'Testing sem programs '), nl(OS), nl(OS),
-   testaux_read_and_lex_specific_tests(F2, OS, 'sem'),
-   close(OS).
-
-testaux_read_and_lex_specific_test(OS, FILE) :-
-   atom_concat('testfiles/', FILE, FP),
-   atom_concat('Testing ', FP, START),
-   write(OS, START), nl(OS), nl(OS),
-   read_in(FP, L), 
-   write(OS, L), nl(OS),
-   lexer(L, Tok),
-   write(OS, Tok), nl(OS),
-   atom_concat(FP, ' end of parse', END),
-   write(OS, END), nl(OS), nl(OS).
-
-testaux_read_and_lex_specific_tests([], _, _).
-
-testaux_read_and_lex_specific_tests([H|T], OS, SEARCH) :-
-   sub_string(H, _, _, _, SEARCH),
-   atom_concat('testfiles/', H, FP),
-   atom_concat('Testing ', FP, START),
-   write(OS, START), nl(OS), nl(OS),
-   read_in(FP, L), 
-   write(OS, L), nl(OS),
-   lexer(L, Tok),
-   write(OS, Tok), nl(OS),
-   atom_concat(FP, ' end of parse', END),
-   write(OS, END), nl(OS), nl(OS),
-   testaux_read_and_lex_specific_tests(T, OS, SEARCH).
-
-testaux_read_and_lex_specific_tests([_|T], OS, SEARCH) :-
-   testaux_read_and_lex_specific_tests(T, OS, SEARCH).
-
-/* Take the argumented file and test it in read and lex */
-test_read_and_lex_specific_test(FILE) :-
-   atom_concat('testfiles/', FILE, FP),
-   atom_concat('Testing ', FP, START),
-   write(START), nl, nl,
-   read_in(FP, L), 
-   write(L), nl,
-   lexer(L, Tok),
-   write(Tok), nl,
-   atom_concat(FP, ' end of parse', END),
-   write(END), nl, nl.
-
-test_read_lex_parser_specific_test(FILE) :-
-   atom_concat('testfiles/', FILE, FP),
-   atom_concat('Testing ', FP, START),
-   write(START), nl, nl,
-   read_in(FP, L), 
-   write(L), nl,
-   lexer(L, Tok),
-   write(Tok), nl,
-   parser(Tok,Result),
-   write(Result), nl,
-   atom_concat(FP, ' end of parse', END),
-   write(END), nl, nl.
-
-/* testa  - file input (characters + Pascal program)                          */
-testa   :- testread(['cmreader.txt', 'testok1.pas']).
-/* testb  - file input as testa + output to file                              */
-testb   :- tell('cmreader.out'), testread(['cmreader.txt', 'testok1.pas']), told.
-/* ttrace - file input + switch on tracing (check this carefully)             */
-ttrace  :- trace, testread(['cmreader.txt']), notrace, nodebug.
-
-testread([]).
-testread([H|T]) :- nl, write('Testing C&M Reader, input file: '), write(H), nl,
-                   read_in(H,L), write(L), nl,
-                   nl, write(' end of C&M Reader test'), nl,
-                   testread(T).
-
-
-testph :- prog_head([program, a, '(', input, ',', output, ')', ';'], []).
-testpr :-   program([program, c, '(', input, ',', output, ')', ';'], []).
 
 /******************************************************************************/
 /* End of program                                                             */
